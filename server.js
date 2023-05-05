@@ -13,10 +13,34 @@ const psychologiesTypes = [
   "Industrial-Organizational Psychology",
 ];
 
-app.get("/psychologiesTypes", (req, res) => {
-  res.json(psychologiesTypes);
+const therapistTypes = [
+  "Psychology",
+  "Social Worker",
+  "Criminologiest",
+  "Creative Arts Therapist",
+  "Psychodrama Therapist",
+  "Bibliotherapist",
+  "Occupational Therapist",
+  "Speach Therapist",
+  "psycho Therapist",
+  "CBT Therapist",
+  "DBT Therapist",
+  "NLP Therapist",
+  "EMDR Therapist",
+  "Coacher",
+  "Animal-Assisted Therapist",
+  "neurofeedback",
+  "psychoanaliest",
+  "Psychiatrist",
+  "Family Therapist",
+  "Caple Therapist",
+  "Dance Therapist",
+];
+
+app.get("/therapistTypes", (req, res) => {
+  res.json(therapistTypes);
 });
 
 app.listen(PORT, () => {
-    console.log("listening to port 5000.....");
-  });
+  console.log("listening to port 5000.....");
+});
