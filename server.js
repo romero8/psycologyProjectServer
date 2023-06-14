@@ -2,13 +2,40 @@ const express = require("express");
 const app = express();
 const PORT = 5000;
 const bcrypt = require("bcrypt");
+const mongoose = require('mongoose')
+const dbURI = 'mongodb+srv://shayRomero:Ilovepizza20@psychologycluster.lyxb36s.mongodb.net/psychologiesDataBase'
+const Blog = require('./models/blog')
 
 app.use(express.json());
 
-const users = [];
+let users = [];
+
+mongoose.connect(dbURI)
+.then((result)=> app.listen(PORT, () => {
+  console.log("listening to port 5000.....");
+}))
+.catch((err)=> console.log(err))
 
 app.get("/users", (req, res) => {
   res.json(users);
+});
+
+app.get("/addBlog", (req, res) => {
+  const blog = new Blog({
+    title: 'newBloggggggggg',
+    snipped:'about my new Blogggggg',
+    body: ' more About my new blog'
+  })
+  blog.save()
+  .then((result) => res.send(result))
+  .catch((err)=> console.log(err))
+});
+
+app.get("/allBlogs", (req, res) => {
+  
+  Blog.find()
+  .then((result) => res.send(result))
+  .catch((err)=> console.log(err))
 });
 
 app.post("/users", async (req, res) => {
@@ -19,8 +46,9 @@ app.post("/users", async (req, res) => {
       password: hashedPassword,
       textArea: req.body.textArea,
     };
+    res.json({ message: "Form Submitted" })
     users.push(user);
-    console.log(users);
+    console.log(users)
   } catch {
     res.status(500).send();
   }
@@ -42,9 +70,7 @@ app.post("/users/logIn", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log("listening to port 5000.....");
-});
+
 
 // const psychologiesTypes = [
 //   //   "Abnormal Psychology",
