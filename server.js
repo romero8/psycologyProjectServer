@@ -3,15 +3,27 @@ const app = express();
 const PORT = 5000;
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
+const cookieParser = require('cookie-parser')
 const dbURI =
   "mongodb+srv://shayRomero:Ilovepizza20@psychologycluster.lyxb36s.mongodb.net/psychologiesDataBase";
 const User = require("./models/User");
+const jwt = require('jsonwebtoken')
+
+
 
 function handleErrors(err){
 console.log(err.message,err.code)
 }
 
+const maxAge = 3 * 24 * 60 * 60;
+function createToken(id){
+return jwt.sign({id}, 'ezPsy secret', {
+  expiresIn:maxAge
+});
+}
+
 app.use(express.json());
+app.use(cookieParser())
 
 let users = [];
 
@@ -28,7 +40,7 @@ app.get("/users", (req, res) => {
   res.json(users);
 });
 
-app.post("/users", async (req, res) => {
+app.post("/signUp", async (req, res) => {
   
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -37,32 +49,76 @@ app.post("/users", async (req, res) => {
       password: hashedPassword,
       textArea: req.body.textArea,
     });
-    res.status(201).json(user);
-    users.push(user)
-
-    
-
+    const token = createToken(user._id);
+    res.cookie('jwt', token,{httpOnly:true,maxAge:maxAge*1000});
+    res.status(201).json({user: user._id});
   } catch(err) {
     handleErrors(err)
-    res.status(500).send("error,user not created");
+    res.status(500).send(err);
   }
 });
 
-app.post("/users/logIn", async (req, res) => {
-  const user = users.find((user) => (user.email = req.body.email));
-  if (user == null) {
-    return res.status(400).send("Cannot find user");
+
+
+app.post("/logIn", async (req, res) => {
+  const {email,password} = req.body;
+
+  try{
+    const user = await User.logIn(email,password)
+    const token = createToken(user._id);
+    res.cookie('jwt', token,{httpOnly:true,maxAge:maxAge*1000});
+    res.status(200).json({user:user._id})
   }
-  try {
-    if (await bcrypt.compare(req.body.password, user.password)) {
-      res.json("Success");
-    } else {
-      res.json("Not Allowed");
-    }
-  } catch {
-    res.status(500).send();
+  
+  catch (err){
+    const errors = handleErrors(err)
+    res.status(400).json({errors})
   }
+  
 });
+
+
+
+
+
+
+
+
+
+
+
+// app.post("/logIn", async (req, res) => {
+//   const user = users.find((user) => (user.email = req.body.email));
+//   if (user == null) {
+//     return res.status(400).send("Cannot find user");
+//   }
+//   try {
+//     if (await bcrypt.compare(req.body.password, user.password)) {
+//       res.json("Success");
+//     } else {
+//       res.json("Not Allowed");
+//     }
+//   } catch {
+//     res.status(500).send();
+//   }
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // const psychologiesTypes = [
 //   //   "Abnormal Psychology",
