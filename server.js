@@ -3,27 +3,26 @@ const app = express();
 const PORT = 5000;
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
-const cookieParser = require('cookie-parser')
+const cookieParser = require("cookie-parser");
 const dbURI =
   "mongodb+srv://shayRomero:Ilovepizza20@psychologycluster.lyxb36s.mongodb.net/psychologiesDataBase";
 const User = require("./models/User");
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
+const {requireAuth, checkUser} = require('./middleWare/authMiddleWare')
 
-
-
-function handleErrors(err){
-console.log(err.message,err.code)
+function handleErrors(err) {
+  console.log(err.message, err.code);
 }
 
 const maxAge = 3 * 24 * 60 * 60;
-function createToken(id){
-return jwt.sign({id}, 'ezPsy secret', {
-  expiresIn:maxAge
-});
+function createToken(id) {
+  return jwt.sign({ id }, "ezPsy secret", {
+    expiresIn: maxAge,
+  });
 }
 
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
 
 let users = [];
 
@@ -36,12 +35,14 @@ mongoose
   )
   .catch((err) => console.log(err));
 
+  app.get('*',checkUser)
+ 
+
 app.get("/users", (req, res) => {
-  res.json(users);
+  
 });
 
 app.post("/signUp", async (req, res) => {
-  
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = await User.create({
@@ -50,42 +51,27 @@ app.post("/signUp", async (req, res) => {
       textArea: req.body.textArea,
     });
     const token = createToken(user._id);
-    res.cookie('jwt', token,{httpOnly:true,maxAge:maxAge*1000});
-    res.status(201).json({user: user._id});
-  } catch(err) {
-    handleErrors(err)
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(201).json({ user: user._id });
+  } catch (err) {
+    handleErrors(err);
     res.status(500).send(err);
   }
 });
 
-
-
 app.post("/logIn", async (req, res) => {
-  const {email,password} = req.body;
+  const { email, password } = req.body;
 
-  try{
-    const user = await User.logIn(email,password)
+  try {
+    const user = await User.logIn(email, password);
     const token = createToken(user._id);
-    res.cookie('jwt', token,{httpOnly:true,maxAge:maxAge*1000});
-    res.status(200).json({user:user._id})
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(200).json({ user: user._id });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
   }
-  
-  catch (err){
-    const errors = handleErrors(err)
-    res.status(400).json({errors})
-  }
-  
 });
-
-
-
-
-
-
-
-
-
-
 
 // app.post("/logIn", async (req, res) => {
 //   const user = users.find((user) => (user.email = req.body.email));
@@ -102,23 +88,6 @@ app.post("/logIn", async (req, res) => {
 //     res.status(500).send();
 //   }
 // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // const psychologiesTypes = [
 //   //   "Abnormal Psychology",
