@@ -35,11 +35,23 @@ mongoose
   )
   .catch((err) => console.log(err));
 
-  app.get('*',checkUser)
+  // app.get('*',checkUser)
  
 
-app.get("/users", (req, res) => {
-  
+app.get("/user/:userId", (req, res) => {
+   
+
+  res.json(req.params.userId);
+  // User.findById(req.params.userId)
+  // .then(doc=>{
+  //   if(!doc){
+  //     return res.status(404).end()
+  //   }
+  //   else{
+  //     return res.status(200).json(doc)
+  //   }
+  // })
+  // .catch(err=>next(err))
 });
 
 app.post("/signUp", async (req, res) => {
@@ -66,7 +78,7 @@ app.post("/logIn", async (req, res) => {
     const user = await User.logIn(email, password);
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({ user: user._id });
+    res.status(200).json({user:user});
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json({ errors });
