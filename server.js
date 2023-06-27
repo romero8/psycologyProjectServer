@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 5000;
+// const PORT = 5000;
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
@@ -8,7 +8,9 @@ const dbURI =
   "mongodb+srv://shayRomero:Ilovepizza20@psychologycluster.lyxb36s.mongodb.net/psychologiesDataBase";
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
-const {requireAuth, checkUser} = require('./middleWare/authMiddleWare')
+const { requireAuth, checkUser } = require("./middleWare/authMiddleWare");
+
+require("dotenv").config()
 
 function handleErrors(err) {
   console.log(err.message, err.code);
@@ -29,19 +31,17 @@ let users = [];
 mongoose
   .connect(dbURI)
   .then((result) =>
-    app.listen(PORT, () => {
+    app.listen(process.env.PORT || 5000, () => {
       console.log("listening to port 5000.....");
     })
   )
   .catch((err) => console.log(err));
 
-  // app.get('*',checkUser)
- 
+// app.get('*',checkUser)
 
-app.get("/user/:userId", (req, res) => {
-   
-
-  res.json(req.params.userId);
+app.get("/userLoggedIn", (req, res) => {
+  const userId = req.body
+  console.log(userId)
   // User.findById(req.params.userId)
   // .then(doc=>{
   //   if(!doc){
@@ -78,7 +78,7 @@ app.post("/logIn", async (req, res) => {
     const user = await User.logIn(email, password);
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({user:user});
+    res.status(200).json({ user: user, token: token });
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json({ errors });
