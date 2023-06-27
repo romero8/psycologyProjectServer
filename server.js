@@ -26,7 +26,10 @@ function createToken(id) {
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors())
+app.use(cors({
+  origin: "https://mangisiteserver.onrender.com",
+  credentials: true
+}))
 
 let users = [];
 
