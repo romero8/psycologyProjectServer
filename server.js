@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors')
 const app = express();
 // const PORT = 5000;
 const bcrypt = require("bcrypt");
@@ -25,6 +26,7 @@ function createToken(id) {
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors())
 
 let users = [];
 
@@ -38,6 +40,11 @@ mongoose
   .catch((err) => console.log(err));
 
 // app.get('*',checkUser)
+
+app.get('/',(req,res)=>{
+  res.setHeader("Access-Control-Allow-Credentials","true");
+  res.send("API is running..")
+})
 
 app.get("/userLoggedIn", (req, res) => {
   const userId = req.body
