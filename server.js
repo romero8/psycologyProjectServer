@@ -46,7 +46,7 @@ mongoose
 
 app.get('/',(req,res)=>{
   res.setHeader("Access-Control-Allow-Credentials","true");
-  res.send("API is running..")
+  res.json([{name:"shlomo",age:22},{name:"yossi",age:32},])
 })
 
 app.get("/userLoggedIn", (req, res) => {
