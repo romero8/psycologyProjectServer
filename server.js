@@ -27,7 +27,7 @@ function createToken(id) {
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "https://mangisite.netlify.app",
   credentials: true
 }))
 
