@@ -16,10 +16,52 @@ const userSchema = new Schema({
         required: [true,'Please Enter A Password'],
         minlength: [6,'Minimum Password Length Is 6']
     },
-    textArea : {
+    name : {
         type: String,
         required: true
+    },
+    lastName : {
+        type: String,
+        required: true
+    },
+    profession : {
+        type: String,
+        required: true
+    },
+    experties : {
+        type: Array,
+        required: true
+    },
+    address : {
+        type: Object,
+        required: true
+    },
+    phone : {
+        type: Number,
+    },
+    price : {
+        type: String,
+        required: true
+    },
+    gender : {
+        type: String,
+        required: true
+    },
+    language : {
+        type: Array,
+        required: true
+    },
+    experience : {
+        type: String,
+        required: true
+    },
+    LGBTQ : {
+        type: String,
+    },
+    about : {
+        type: String,
     }
+    
 },{timestamps: true})
 
 

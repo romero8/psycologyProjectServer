@@ -70,7 +70,18 @@ app.post("/signUp", async (req, res) => {
     const user = await User.create({
       email: req.body.email,
       password: hashedPassword,
-      textArea: req.body.textArea,
+      name: req.body.name,
+      lastName: req.body.lastName,
+      profession: req.body.profession,
+      experties: req.body.experties,
+      address: req.body.address,
+      phone: req.body.phone,
+      price: req.body.price,
+      gender: req.body.gender,
+      language: req.body.language,
+      experience: req.body.experience,
+      LGBTQ: req.body.LGBTQ,
+      about: req.body.about,
     });
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
