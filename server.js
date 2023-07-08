@@ -66,10 +66,9 @@ app.get("/userLoggedIn", (req, res) => {
 
 app.post("/signUp", async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = await User.create({
       email: req.body.email,
-      password: hashedPassword,
+      password: req.body.password,
       name: req.body.name,
       lastName: req.body.lastName,
       profession: req.body.profession,
