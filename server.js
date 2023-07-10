@@ -15,6 +15,18 @@ require("dotenv").config()
 
 function handleErrors(err) {
   console.log(err.message, err.code);
+  if(err.code === 11000){
+    return {errors:{email:{message:'That Email is already registred'}}}
+  }
+  if(err.message==='incorrect email'){
+    return {errors:{email:{message:'incorrect email'}}}
+  }
+  if(err.message==='incorrect password'){
+    return {errors:{password:{message:'incorrect password'}}}
+  }
+  else{
+    return err
+  }
 }
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -79,7 +91,6 @@ app.post("/signUp", async (req, res) => {
       gender: req.body.gender,
       language: req.body.language,
       experience: req.body.experience,
-      LGBTQ: req.body.LGBTQ,
       about: req.body.about,
     });
     const token = createToken(user._id);
@@ -87,7 +98,7 @@ app.post("/signUp", async (req, res) => {
     res.status(201).json({ user: user._id });
   } catch (err) {
     handleErrors(err);
-    res.status(500).send(err);
+    res.status(500).send(handleErrors(err));
   }
 });
 
@@ -100,8 +111,7 @@ app.post("/logIn", async (req, res) => {
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(200).json({ user: user, token: token });
   } catch (err) {
-    const errors = handleErrors(err);
-    res.status(400).json({ errors });
+    res.status(400).send(handleErrors(err));
   }
 });
 

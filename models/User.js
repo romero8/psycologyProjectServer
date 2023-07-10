@@ -56,9 +56,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    LGBTQ: {
-      type: String,
-    },
     about: {
       type: String,
     },
