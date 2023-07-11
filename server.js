@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require('cors')
+const cors = require("cors");
 const app = express();
 // const PORT = 5000;
 const bcrypt = require("bcrypt");
@@ -10,22 +10,25 @@ const dbURI =
 const User = require("./models/User");
 const jwt = require("jsonwebtoken");
 const { requireAuth, checkUser } = require("./middleWare/authMiddleWare");
+const Therapist = require("./models/Therapist");
+const Client = require("./models/Client");
 
-require("dotenv").config()
+require("dotenv").config();
 
 function handleErrors(err) {
   console.log(err.message, err.code);
-  if(err.code === 11000){
-    return {errors:{email:{message:'That Email is already registred'}}}
+  if (err.code === 11000) {
+    return {
+      errors: { email: { message: "That Email is already registred" } },
+    };
   }
-  if(err.message==='incorrect email'){
-    return {errors:{email:{message:'incorrect email'}}}
+  if (err.message === "incorrect email") {
+    return { errors: { email: { message: "incorrect email" } } };
   }
-  if(err.message==='incorrect password'){
-    return {errors:{password:{message:'incorrect password'}}}
-  }
-  else{
-    return err
+  if (err.message === "incorrect password") {
+    return { errors: { password: { message: "incorrect password" } } };
+  } else {
+    return err;
   }
 }
 
@@ -38,10 +41,12 @@ function createToken(id) {
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}))
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 let users = [];
 
@@ -56,14 +61,17 @@ mongoose
 
 // app.get('*',checkUser)
 
-app.get('/',(req,res)=>{
-  res.setHeader("Access-Control-Allow-Credentials","true");
-  res.json([{name:"shlomo",age:22},{name:"yossi",age:32},])
-})
+app.get("/", (req, res) => {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.json([
+    { name: "shlomo", age: 22 },
+    { name: "yossi", age: 32 },
+  ]);
+});
 
 app.get("/userLoggedIn", (req, res) => {
-  const userId = req.body
-  console.log(userId)
+  const userId = req.body;
+  console.log(userId);
   // User.findById(req.params.userId)
   // .then(doc=>{
   //   if(!doc){
@@ -76,9 +84,9 @@ app.get("/userLoggedIn", (req, res) => {
   // .catch(err=>next(err))
 });
 
-app.post("/signUp", async (req, res) => {
+app.post("/signUp/therapist", async (req, res) => {
   try {
-    const user = await User.create({
+    const therapist = await Therapist.create({
       email: req.body.email,
       password: req.body.password,
       name: req.body.name,
@@ -93,23 +101,55 @@ app.post("/signUp", async (req, res) => {
       experience: req.body.experience,
       about: req.body.about,
     });
-    const token = createToken(user._id);
+    const token = createToken(therapist._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(201).json({ user: user._id });
+    res.status(201).json({ therapist: therapist._id });
   } catch (err) {
     handleErrors(err);
     res.status(500).send(handleErrors(err));
   }
 });
 
-app.post("/logIn", async (req, res) => {
-  const { email, password } = req.body;
 
+app.post("/signUp/client", async (req, res) => {
   try {
-    const user = await User.logIn(email, password);
+    const client = await Client.create({
+      email: req.body.email,
+      password: req.body.password,
+      name: req.body.name,
+      lastName: req.body.lastName,
+      profession: req.body.profession,
+      experties: req.body.experties,
+      address: req.body.address,
+      phone: req.body.phone,
+      price: req.body.price,
+      gender: req.body.gender,
+      language: req.body.language,
+      experience: req.body.experience,
+      about: req.body.about,
+    });
+    const token = createToken(client._id);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(201).json({ client: client._id });
+  } catch (err) {
+    handleErrors(err);
+    res.status(500).send(handleErrors(err));
+  }
+});
+
+
+
+app.post("/logIn", async (req, res) => {
+
+  
+
+  const { email, password } = req.body;
+  try {
+    const user = await Therapist.logIn(email, password) ? await Therapist.logIn(email, password) : await Client.logIn(email,password);   
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({ user: user, token: token });
+    res.cookie();
+    res.status(200).json(user.profession ? {therapist:user,token:token} :{client:user,token:token} );
   } catch (err) {
     res.status(400).send(handleErrors(err));
   }
