@@ -13,7 +13,9 @@ const { requireAuth, checkUser } = require("./middleWare/authMiddleWare");
 const Therapist = require("./models/Therapist");
 const Client = require("./models/Client");
 
+
 require("dotenv").config();
+
 
 function handleErrors(err) {
   console.log(err.message, err.code);
@@ -82,6 +84,14 @@ app.get("/userLoggedIn", (req, res) => {
   //   }
   // })
   // .catch(err=>next(err))
+});
+app.get("/allTherapists", async (req, res) => {
+ try{
+  const allTherapists = await Therapist.find({})
+  res.send({status:"ok",data:allTherapists})
+ } catch(err){
+  console.log(err)
+ }
 });
 
 app.post("/signUp/therapist", async (req, res) => {
