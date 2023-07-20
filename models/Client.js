@@ -41,6 +41,9 @@ const clientSchema = new Schema(
     about: {
       type: String,
     },
+    favorites: {
+      type:Array
+    }
   },
   { timestamps: true }
 );

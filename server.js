@@ -12,6 +12,7 @@ const jwt = require("jsonwebtoken");
 const { requireAuth, checkUser } = require("./middleWare/authMiddleWare");
 const Therapist = require("./models/Therapist");
 const Client = require("./models/Client");
+const { ObjectId } = require("mongodb");
 
 
 require("dotenv").config();
@@ -85,10 +86,21 @@ app.get("/userLoggedIn", (req, res) => {
   // })
   // .catch(err=>next(err))
 });
+
 app.get("/allTherapists", async (req, res) => {
  try{
   const allTherapists = await Therapist.find({})
   res.send({status:"ok",data:allTherapists})
+ } catch(err){
+  console.log(err)
+ }
+});
+
+app.post("/update/client", async (req, res) => {
+ try{
+  const updateData = await req.body
+  const updateClient = await Client.updateOne({_id:updateData.userLoggedIn._id},{$set:{favorites:updateData.userToAdd}})
+  res.send({status:"ok",message:'User Updated',updateClient:updateClient})
  } catch(err){
   console.log(err)
  }
