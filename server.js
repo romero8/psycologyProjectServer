@@ -72,19 +72,17 @@ app.get("/", (req, res) => {
   ]);
 });
 
-app.get("/userLoggedIn", (req, res) => {
-  const userId = req.body;
-  console.log(userId);
-  // User.findById(req.params.userId)
-  // .then(doc=>{
-  //   if(!doc){
-  //     return res.status(404).end()
-  //   }
-  //   else{
-  //     return res.status(200).json(doc)
-  //   }
-  // })
-  // .catch(err=>next(err))
+app.post("/userLoggedIn",async (req, res) => {
+  
+  try{
+    const clientLoggedIn = await Client.findById(req.body._id)
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.send({status:"ok",clientLoggedIn:clientLoggedIn})
+   } catch(err){
+    console.log(err)
+   }
+ 
+  
 });
 
 app.get("/allTherapists", async (req, res) => {
@@ -162,9 +160,6 @@ app.post("/signUp/client", async (req, res) => {
 
 
 app.post("/logIn", async (req, res) => {
-
-  
-
   const { email, password } = req.body;
   try {
     const user = await Therapist.logIn(email, password) ? await Therapist.logIn(email, password) : await Client.logIn(email,password);   
