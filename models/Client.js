@@ -43,7 +43,8 @@ const clientSchema = new Schema(
     },
     favorites: {
       type:Array
-    }
+    },
+    
   },
   { timestamps: true }
 );

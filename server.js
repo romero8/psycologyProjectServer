@@ -75,9 +75,9 @@ app.get("/", (req, res) => {
 app.post("/userLoggedIn",async (req, res) => {
   
   try{
+    console.log(req.body._id)
     const clientLoggedIn = await Client.findById(req.body._id)
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.send({status:"ok",clientLoggedIn:clientLoggedIn})
+    res.json({status:"ok",clientLoggedIn:clientLoggedIn})
    } catch(err){
     console.log(err)
    }
@@ -96,9 +96,10 @@ app.get("/allTherapists", async (req, res) => {
 
 app.post("/update/client", async (req, res) => {
  try{
+  const clientLoggedIn = await Client.findById(req.body.userLoggedIn._id)
   const updateData = await req.body
-  const updateClient = await Client.updateOne({_id:updateData.userLoggedIn._id},{$set:{favorites:updateData.userToAdd}})
-  res.send({status:"ok",message:'User Updated',updateClient:updateClient})
+  const updateClient = await Client.updateOne({_id:updateData.userLoggedIn._id},{$set:{favorites:updateData.favoritesToUpdate}})
+  res.send({status:"ok",message:'User Updated',clientLoggedIn:clientLoggedIn})
  } catch(err){
   console.log(err)
  }
