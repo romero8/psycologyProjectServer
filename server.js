@@ -75,7 +75,6 @@ app.get("/", (req, res) => {
 app.post("/userLoggedIn",async (req, res) => {
   
   try{
-    console.log(req.body._id)
     const clientLoggedIn = await Client.findById(req.body._id)
     res.json({status:"ok",clientLoggedIn:clientLoggedIn})
    } catch(err){
@@ -100,6 +99,17 @@ app.post("/update/client", async (req, res) => {
   const updateData = await req.body
   const updateClient = await Client.updateOne({_id:updateData.userLoggedIn._id},{$set:{favorites:updateData.favoritesToUpdate}})
   res.send({status:"ok",message:'User Updated',clientLoggedIn:clientLoggedIn})
+ } catch(err){
+  console.log(err)
+ }
+});
+
+app.post("/update/therapist", async (req, res) => {
+ try{
+  const therapistUpdated = await Therapist.findById(req.body.id)
+  const updateData = await req.body
+  const updateTherapist = await Therapist.updateOne({_id:updateData.id},{$set:{addedToFavorites:updateData.addedToFavorites}})
+  res.send({status:"ok",message:'User Updated',therapistUpdated:therapistUpdated})
  } catch(err){
   console.log(err)
  }

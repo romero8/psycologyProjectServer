@@ -60,6 +60,9 @@ const therapistSchema = new Schema(
     about: {
       type: String,
     },
+    addedToFavorites:{
+      type: Array,
+    }
   },
   { timestamps: true }
 );
