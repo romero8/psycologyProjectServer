@@ -62,6 +62,9 @@ const therapistSchema = new Schema(
     },
     addedToFavorites:{
       type: Array,
+    },
+    clientsIcalled:{
+      type:Array
     }
   },
   { timestamps: true }

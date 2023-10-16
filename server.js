@@ -14,9 +14,7 @@ const Therapist = require("./models/Therapist");
 const Client = require("./models/Client");
 const { ObjectId } = require("mongodb");
 
-
 require("dotenv").config();
-
 
 function handleErrors(err) {
   console.log(err.message, err.code);
@@ -72,47 +70,72 @@ app.get("/", (req, res) => {
   ]);
 });
 
-app.post("/userLoggedIn",async (req, res) => {
-  
-  try{
-    const clientLoggedIn = await Client.findById(req.body._id)
-    res.json({status:"ok",clientLoggedIn:clientLoggedIn})
-   } catch(err){
-    console.log(err)
-   }
- 
-  
+app.post("/userLoggedIn", async (req, res) => {
+  try {
+    const clientLoggedIn = await Client.findById(req.body._id);
+    res.json({ status: "ok", clientLoggedIn: clientLoggedIn });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.get("/allTherapists", async (req, res) => {
- try{
-  const allTherapists = await Therapist.find({})
-  res.send({status:"ok",data:allTherapists})
- } catch(err){
-  console.log(err)
- }
+  try {
+    const allTherapists = await Therapist.find({});
+    res.send({ status: "ok", data: allTherapists });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get("/allClients", async (req, res) => {
+  try {
+    const allClients = await Client.find({});
+    res.send({ status: "ok", data: allClients });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.post("/update/client", async (req, res) => {
- try{
-  const clientLoggedIn = await Client.findById(req.body.userLoggedIn._id)
-  const updateData = await req.body
-  const updateClient = await Client.updateOne({_id:updateData.userLoggedIn._id},{$set:{favorites:updateData.favoritesToUpdate}})
-  res.send({status:"ok",message:'User Updated',clientLoggedIn:clientLoggedIn})
- } catch(err){
-  console.log(err)
- }
+  try {
+    const clientLoggedIn = await Client.findById(req.body.userLoggedIn._id);
+    const updateData = await req.body;
+    const updateClient = await Client.updateOne(
+      { _id: updateData.userLoggedIn._id },
+      { $set: { favorites: updateData.favoritesToUpdate } }
+    );
+    res.send({
+      status: "ok",
+      message: "User Updated",
+      clientLoggedIn: clientLoggedIn,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.post("/update/therapist", async (req, res) => {
- try{
-  const therapistUpdated = await Therapist.findById(req.body.id)
-  const updateData = await req.body
-  const updateTherapist = await Therapist.updateOne({_id:updateData.id},{$set:{addedToFavorites:updateData.addedToFavorites}})
-  res.send({status:"ok",message:'User Updated',therapistUpdated:therapistUpdated})
- } catch(err){
-  console.log(err)
- }
+  try {
+    const therapistUpdated = await Therapist.findById(req.body.id);
+    const updateData = await req.body;
+    const updateTherapist = await Therapist.updateOne(
+      { _id: updateData.id },
+      {
+        $set: {
+          addedToFavorites: updateData.addedToFavorites,
+          clientsIcalled: updateData.clientsIcalled,
+        },
+      }
+    );
+    res.send({
+      status: "ok",
+      message: "User Updated",
+      therapistUpdated: therapistUpdated,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.post("/signUp/therapist", async (req, res) => {
@@ -141,7 +164,6 @@ app.post("/signUp/therapist", async (req, res) => {
   }
 });
 
-
 app.post("/signUp/client", async (req, res) => {
   try {
     const client = await Client.create({
@@ -168,90 +190,25 @@ app.post("/signUp/client", async (req, res) => {
   }
 });
 
-
-
 app.post("/logIn", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await Therapist.logIn(email, password) ? await Therapist.logIn(email, password) : await Client.logIn(email,password);   
+    const user = (await Therapist.logIn(email, password))
+      ? await Therapist.logIn(email, password)
+      : await Client.logIn(email, password);
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.cookie();
-    res.status(200).json(user.profession ? {therapist:user,token:token} :{client:user,token:token} );
+    res
+      .status(200)
+      .json(
+        user.profession
+          ? { therapist: user, token: token }
+          : { client: user, token: token }
+      );
   } catch (err) {
     res.status(400).send(handleErrors(err));
   }
 });
 
-// app.post("/logIn", async (req, res) => {
-//   const user = users.find((user) => (user.email = req.body.email));
-//   if (user == null) {
-//     return res.status(400).send("Cannot find user");
-//   }
-//   try {
-//     if (await bcrypt.compare(req.body.password, user.password)) {
-//       res.json("Success");
-//     } else {
-//       res.json("Not Allowed");
-//     }
-//   } catch {
-//     res.status(500).send();
-//   }
-// });
-
-// const psychologiesTypes = [
-//   //   "Abnormal Psychology",
-//   //   "Biopsychology",
-//   //   "Social Psychology",
-//   //   "Cognitive Psychology",
-//   //   "Developmental Psychology",
-//   //   "Personality Psychology",
-//   //   "Forensic Psychology",
-//   //   "Industrial-Organizational Psychology",
-//   // ];
-
-// const therapistTypes = [
-//   "Psychology",
-//   "Social Worker",
-//   "Criminologiest",
-//   "Creative Arts Therapist",
-//   "Psychodrama Therapist",
-//   "Bibliotherapist",
-//   "Occupational Therapist",
-//   "Speach Therapist",
-//   "psycho Therapist",
-//   "CBT Therapist",
-//   "DBT Therapist",
-//   "NLP Therapist",
-//   "EMDR Therapist",
-//   "Coacher",
-//   "Animal-Assisted Therapist",
-//   "neurofeedback",
-//   "psychoanaliest",
-//   "Psychiatrist",
-//   "Family Therapist",
-//   "Caple Therapist",
-//   "Dance Therapist",
-// ];
-
-// app.get("/therapistTypes", (req, res) => {
-//   res.json(therapistTypes);
-// });
-
-// app.get("/addUSer", (req, res) => {
-//   const user = new User({
-//     title: 'newBloggggggggg',
-//     snipped:'about my new Blogggggg',
-//     body: ' more About my new blog'
-//   })
-//   user.save()
-//   .then((result) => res.send(result))
-//   .catch((err)=> console.log(err))
-// });
-
-// app.get("/allUsers", (req, res) => {
-
-//   User.find()
-//   .then((result) => res.send(result))
-//   .catch((err)=> console.log(err))
-// });
+// ap
