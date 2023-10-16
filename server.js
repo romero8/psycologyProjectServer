@@ -44,7 +44,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://mangisite.netlify.app/",
+    origin: "https://mangisite.netlify.app",
     credentials: true,
   })
 );
