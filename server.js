@@ -13,6 +13,7 @@ const { requireAuth, checkUser } = require("./middleWare/authMiddleWare");
 const Therapist = require("./models/Therapist");
 const Client = require("./models/Client");
 const { ObjectId } = require("mongodb");
+const bodyParser = require("body-parser");
 
 require("dotenv").config();
 
