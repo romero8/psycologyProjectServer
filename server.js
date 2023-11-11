@@ -40,13 +40,13 @@ function createToken(id) {
     expiresIn: maxAge,
   });
 }
+"http://localhost:3000"
 
-// "https://mangisite.netlify.app"
 
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin:"https://mangisite.netlify.app",
     credentials: true,
   })
 );
