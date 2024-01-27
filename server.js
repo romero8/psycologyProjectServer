@@ -14,6 +14,8 @@ const Therapist = require("./models/Therapist");
 const Client = require("./models/Client");
 const { ObjectId } = require("mongodb");
 const bodyParser = require("body-parser");
+const siteUrl = "https://mangisite.netlify.app"
+const localHost = 'http://localhost:3000'
 
 require("dotenv").config();
 
@@ -40,13 +42,13 @@ function createToken(id) {
     expiresIn: maxAge,
   });
 }
-// "http://localhost:3000"
+
 
 
 app.use(cookieParser());
 app.use(
   cors({
-    origin:"https://mangisite.netlify.app",
+    origin:localHost,
     credentials: true,
   })
 );
@@ -215,4 +217,4 @@ app.post("/logIn", async (req, res) => {
   }
 });
 
-// ap
+
